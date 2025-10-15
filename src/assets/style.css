@@ -1,0 +1,147 @@
+/* 📱 Mobile First Design - Styles de base pour mobile */
+
+.container { 
+  padding: 0.75rem; 
+}
+
+.button { 
+  margin-right: 0.5%; 
+  padding: 0.5rem 0.75rem; 
+  border-radius: 0.5rem; 
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  width: 100%; /* Boutons pleine largeur sur mobile */
+  margin-bottom: 0.5rem;
+}
+
+.nowrap { 
+  white-space: nowrap; 
+}
+
+.route { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 4px; /* Gap réduit sur mobile */
+  align-items: center; 
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px; /* Padding réduit pour mobile */
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  line-height: 1;
+  font-size: 0.625rem; /* Plus petit sur mobile */
+}
+
+.sep { 
+  opacity: .6; 
+  margin: 0 1px;
+  font-size: 0.625rem;
+}
+
+/* 📟 Tablet - min-width: 481px */
+@media (min-width: 481px) {
+  .container { 
+    padding: 1rem; 
+  }
+  
+  .button {
+    width: auto; /* Retour à la largeur auto sur tablet+ */
+    margin-bottom: 0;
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .tbl {
+    margin-top: 2rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+  }
+  
+  .tbl thead th {
+    padding: 10px 12px;
+    font-size: 0.875rem;
+  }
+  
+  .tbl tbody td {
+    padding: 10px 12px;
+    font-size: 0.875rem;
+  }
+  
+  .route {
+    gap: 5px;
+  }
+  
+  .badge {
+    padding: 3px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .sep {
+    margin: 0 2px;
+    font-size: 0.75rem;
+  }
+}
+
+/* 💻 Desktop - min-width: 768px */
+@media (min-width: 768px) {
+  .container { 
+    padding: 1.5rem; 
+  }
+  
+  .button {
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .tbl {
+    margin-top: 3rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    overflow-x: visible; /* Plus de scroll horizontal sur desktop */
+  }
+  
+  .tbl thead th {
+    padding: 12px 14px;
+    font-size: 0.875rem;
+  }
+  
+  .tbl tbody td {
+    padding: 12px 14px;
+    font-size: 0.875rem;
+  }
+  
+  .route {
+    gap: 6px;
+  }
+  
+  .badge {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .sep {
+    margin: 0 2px;
+    font-size: 0.75rem;
+  }
+}
+
+/* 🖥️ Large Desktop - min-width: 1200px */
+@media (min-width: 1200px) {
+  .container { 
+    padding: 2rem; 
+  }
+  
+  .tbl {
+    margin-top: 5%; /* Retour au margin-top original sur très grand écran */
+  }
+  
+  .badge {
+    font-size: 0.875rem;
+  }
+}
+

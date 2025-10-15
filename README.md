@@ -45,7 +45,7 @@ frontend/
 
 ### 1. Cloner le projet
 ```bash
-git clone <repo-url> frontend
+git clone https://github.com/johnwaia/frontend.git
 cd frontend
 ```
 
@@ -98,7 +98,6 @@ Le backend est une API Java Spring Boot exposant :
 - Pinia (state management)
 - Vue Router
 - Axios
-- TailwindCSS (ou classes utilitaires simples)
 
 ---
 

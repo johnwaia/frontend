@@ -55,7 +55,7 @@ function labelFor(s={}) {
   const t = norm(s.type)
   if (t.includes('walk') || t.includes('foot')) return 'Marche'
   if (t.includes('wait')) return 'Attente'
-  return c || 'Trajet'
+  return c || 'Marche'
 }
 
 /* ===== Couleurs =====
@@ -122,17 +122,19 @@ const labelCenters = computed(() => {
 
         <!-- Labels des modes (même couleur que la ligne) -->
         <template v-for="(s, idx) in props.sections" :key="'lbl-'+idx">
-          <text
-            :x="labelCenters[idx].x"
-            :y="idx % 2 === 0 ? segLabelTopY : segLabelBottomY"
-            text-anchor="middle" dominant-baseline="middle"
-            :fill="colorFromApi(s)"
-            font-size="11" font-weight="800"
-            style="paint-order: stroke; stroke: #fff; stroke-width: 3px;"
-          >
-            {{ labelFor(s) }}
-          </text>
+            <text
+                :x="labelCenters[idx].x"
+                :y="idx % 2 === 0 ? segLabelTopY : segLabelBottomY"
+                text-anchor="middle" dominant-baseline="middle"
+                :fill="colorFromApi(s)"
+                font-size="11" font-weight="800"
+                style="paint-order: stroke; stroke: #fff; stroke-width: 3px;"
+            >
+                {{ labelFor(s) }}
+                <tspan v-if="s.toName" font-weight="500"> → {{ s.toName }}</tspan>
+            </text>
         </template>
+
 
         <!-- Points + labels d'arrêts (alternance haut/bas) -->
         <template v-for="i in stopsCount" :key="'node-'+i">

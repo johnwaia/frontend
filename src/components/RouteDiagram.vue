@@ -99,6 +99,39 @@ const labelCenters = computed(() => {
   }
   return centers
 })
+
+
+function parseDateSafe(val){
+  if(!val) return null
+  if (val instanceof Date) return Number.isNaN(val.getTime()) ? null : val
+  if (typeof val === 'number') { const d = parseDateSafe(val) || new Date(NaN); return Number.isNaN(d.getTime()) ? null : d }
+  if (typeof val !== 'string') return null
+  let s = val.trim()
+  // Strip TZ region like [Europe/Paris]
+  s = s.replace(/\[[^\]]+\]$/, '')
+  const m = s.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/)
+  if (m){
+    const [_, Y, M, D, h, mi, se] = m
+    const d = new Date(Number(Y), Number(M)-1, Number(D), Number(h), Number(mi), Number(se))
+    return Number.isNaN(d.getTime()) ? null : d
+  }
+  const d = new Date(s)
+  return Number.isNaN(d.getTime()) ? null : d
+}
+
+function fmtTime(val){
+
+  if(!val) return '—'
+  const d = parseDateSafe(val) || new Date(NaN)
+  if(Number.isNaN(d.getTime())) return '—'
+  return d.toLocaleTimeString('fr-FR',{hour:'2-digit', minute:'2-digit'})
+}
+function fmtDurSec(sec){
+  if(sec == null) return '—'
+  let s = Number(sec); if(!Number.isFinite(s)) return '—'
+  const h = Math.floor(s/3600), m = Math.round((s%3600)/60)
+  return h>0 ? `${h}h${m.toString().padStart(2,'0')}` : `${m} min`
+}
 </script>
 
 <template>
@@ -162,10 +195,70 @@ const labelCenters = computed(() => {
           Pas de sections à afficher
         </text>
       </template>
+    
     </svg>
+
+    <!-- Liste des passages -->
+    <div class="section-timeline">
+      <div v-for="(r, i) in rows" :key="'row-'+i" class="row">
+        <div class="time">{{ fmtTime(r.dep) }}</div>
+        <div class="dot" :style="{ borderColor: r.color, background: r.color }"></div>
+        <div class="desc">
+          <div class="main">
+            <span class="mode" :style="{ background: r.color, color: r.textColor }">{{ r.mode || '—' }}</span>
+            <span class="line" v-if="r.line">{{ r.line }}</span>
+            <span class="arrow">→</span>
+            <span class="stop">{{ r.from || '—' }}</span>
+            <span class="sep">→</span>
+            <span class="stop">{{ r.to || '—' }}</span>
+          </div>
+          <div class="sub">{{ fmtDurSec(r.dur) }} · arrivée {{ fmtTime(r.arr) }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .route-diagram { width: 100%; overflow-x: hidden; }
+.section-timeline { margin-top: .75rem; display:flex; flex-direction:column; gap:.5rem; }
+.section-timeline .row{ display:grid; grid-template-columns: 60px 14px 1fr; gap:.6rem; align-items:center; }
+.section-timeline .time{ font-variant-numeric: tabular-nums; font-size:.95rem; opacity:.9; }
+.section-timeline .dot{
+  width:10px; height:10px; border-radius:999px; border:2px solid #6b7280;
+}
+.section-timeline .desc .main{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
+.section-timeline .desc .main .mode{
+  font-size:.75rem; font-weight:700; padding:.15rem .45rem; border-radius:999px; display:inline-block;
+}
+.section-timeline .desc .main .line{ font-size:.85rem; opacity:.8; }
+.section-timeline .desc .main .arrow, .section-timeline .sep{ opacity:.6; }
+.section-timeline .desc .sub{ color:#6b7280; font-size:.85rem; margin-top:.1rem; }
 </style>
+
+
+<style scoped>
+.route-diagram { width: 100%; overflow-x: hidden; }
+</style>
+
+const rows = computed(() => {
+  const list = Array.isArray(props.sections) ? props.sections : []
+  return list.map((s) => {
+    const dep = s.departureIso || s.departure_date_time || s.fromTime || s.startAt || s.departure
+    const arr = s.arrivalIso   || s.arrival_date_time   || s.toTime   || s.endAt   || s.arrival
+    let dur = s.duration
+    if (dur == null && dep && arr) {
+      const sd = parseDateSafe(dep)?.getTime() ?? NaN, ed = parseDateSafe(arr)?.getTime() ?? NaN
+      if (Number.isFinite(sd) && Number.isFinite(ed)) dur = Math.max(0, Math.floor((ed-sd)/1000))
+    }
+    return {
+      dep, arr, dur,
+      mode: s.mode || s.type,
+      line: s.lineCode || s.code || s.line || '',
+      color: s.lineColor || s.color || '#6b7280',
+      textColor: s.textColor || '#ffffff',
+      from: s.fromName || s.from || s.origin || '',
+      to: s.toName || s.to || s.destination || ''
+    }
+  })
+})

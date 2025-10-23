@@ -6,10 +6,9 @@ import { RouterLink, RouterView } from 'vue-router'
   <div class="min-h-screen p-6">
         <header class="site-header">
           <div class="inner">
-            <div class="brand">Transport Finder</div>
+             <img src="/src/assets/logo.png" alt="Logo Dernier Métro" class="logo" />
+            <div class="brand">Dernier Métro</div>
             <nav class="nav">
-              <a href="/">Itinéraires</a>
-              <a href="/about">À propos</a>
             </nav>
           </div>
         </header>
@@ -20,3 +19,11 @@ import { RouterLink, RouterView } from 'vue-router'
     </main>
   </div>
 </template>
+<style scoped>
+
+.logo {
+  height: 50px; /* ajuste la taille */
+  width: auto;
+  border-radius: 30%;
+}
+</style>

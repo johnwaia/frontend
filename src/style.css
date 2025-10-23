@@ -76,4 +76,27 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+/* ✅ Ne JAMAIS limiter la taille des tuiles Leaflet */
+.leaflet-container img.leaflet-tile,
+.leaflet-container .leaflet-marker-icon,
+.leaflet-container .leaflet-marker-shadow {
+  max-width: none !important;
+}
+
+/* ✅ Garantit que la carte occupe bien toute la hauteur */
+.leaflet-container { width: 100% !important; height: 100% !important; }
+
+/* ✅ Évite des glitches lors du clip dans des cards arrondies */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-map-pane,
+.leaflet-objects-pane,
+.leaflet-shadow-pane,
+.leaflet-overlay-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane {
+  transform: translate3d(0,0,0);
+}
+
 }

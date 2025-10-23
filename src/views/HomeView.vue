@@ -2,14 +2,17 @@
 import { useJourneyStore } from '../stores/journeys'
 import PlaceAutocomplete from '../components/PlaceAutocomplete.vue'
 import RouteDiagram from '../components/RouteDiagram.vue'
+import JourneyMapGoogle from '../components/JourneyMapGoogle.vue'
 import '../assets/style.css'
+
 const store = useJourneyStore()
 
 function submit(e) {
   e?.preventDefault()
   store.search({ lastOfDay: false })
 }
-// --- Helpers horaires/durée ---
+
+// Helpers horaires/durée (inchangés)
 function parseDateSafe(val){
   if(!val) return null
   if (val instanceof Date) return Number.isNaN(val.getTime()) ? null : val
@@ -53,15 +56,14 @@ function journeyDurationSeconds(j){
   if (Number.isFinite(sd) && Number.isFinite(ed)) return Math.max(0, Math.floor((ed-sd)/1000))
   return null
 }
-
 </script>
 
 <template>
-  <section class="container">
+  <section class="container hv-root">
     <h2 class="text-xl font-semibold">Itinéraires</h2>
 
     <!-- Formulaire -->
-    <form @submit="submit" class="grid gap-2 md:grid-cols-2 mt-2">
+    <form @submit="submit" class="grid gap-2 md:grid-cols-2 mt-2 hv-form">
       <div>
         <label class="block mb-1">Départ</label>
         <PlaceAutocomplete v-model="store.fromQ" />
@@ -86,7 +88,7 @@ function journeyDurationSeconds(j){
           :disabled="!store.fromQ?.trim() || !store.toQ?.trim()"
           @click="store.search({ lastOfDay: true })"
         >
-          Dernier départ du jour
+          Dernier Métro
         </button>
       </div>
     </form>
@@ -95,22 +97,44 @@ function journeyDurationSeconds(j){
     <div v-if="store.loading" class="mt-4">Chargement…</div>
     <div v-else-if="store.error" class="mt-4 text-red-600">{{ store.error }}</div>
 
-    <!-- Résultats : uniquement le schéma -->
-    <div v-else class="mt-6 space-y-6">
-      <div v-for="(j, i) in store.results" :key="i" class="card p-4">
+    <!-- Résultats -->
+    <div v-else class="mt-6 space-y-6 hv-results">
+      <div v-for="(j, i) in store.results" :key="'journey_'+i" class="card p-4 hv-card">
         <h3 class="font-medium mb-2">
-  Départ : {{ j?.from?.name || '—' }} → Arrivée : {{ j?.to?.name || '—' }}
-</h3>
-<div class="mb-2 nowrap">
-  <strong>{{ formatTime(journeyTimes(j).dep) }}</strong>
-  <span class="sep">→</span>
-  <strong>{{ formatTime(journeyTimes(j).arr) }}</strong>
-  <span class="badge badge--solid" style="margin-left:.5rem">{{ formatDuration(journeyDurationSeconds(j)) }}</span>
-</div>
-<RouteDiagram :sections="j.sections" />
+          Départ : {{ j?.from?.name || '—' }} → Arrivée : {{ j?.to?.name || '—' }}
+        </h3>
+        <div class="mb-2 nowrap">
+          <strong>{{ formatTime(journeyTimes(j).dep) }}</strong>
+          <span class="sep">→</span>
+          <strong>{{ formatTime(journeyTimes(j).arr) }}</strong>
+          <span class="badge badge--solid" style="margin-left:.5rem">
+            {{ formatDuration(journeyDurationSeconds(j)) }}
+          </span>
+        </div>
+
+        <!-- Schéma de parcours -->
+        <RouteDiagram :sections="j.sections" class="mb-4" />
+
+        <!-- Carte Google : 1 itinéraire par carte -->
+        <JourneyMapGoogle
+          :journeys="[j]"
+          :height="420"
+          :key="'map_'+i"
+        />
       </div>
     </div>
   </section>
 </template>
 
-
+<style scoped>
+/* Anti “carte tronquée” en layout flex/grid */
+.hv-root, .hv-results, .hv-card {
+  min-width: 0;
+  min-height: 0;
+}
+.hv-form {
+  min-width: 0;
+}
+.nowrap { white-space: nowrap; }
+.sep { margin: 0 .35rem; }
+</style>
